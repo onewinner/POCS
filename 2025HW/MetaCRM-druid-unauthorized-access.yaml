@@ -1,0 +1,30 @@
+id: MetaCRM-druid-unauthorized-access
+
+info:
+  name: 美特CRM Druid未授权访问漏洞
+  author: onewin
+  severity: high
+  description: |
+    美特CRM系统存在Druid未授权访问漏洞，攻击者可访问监控页面（如 `/druid/websession.html`），导致敏感信息（Session、SQL查询、URI请求等）泄露。
+    [漏洞发现时间：2025年7月]
+  reference:
+    - https://example.com/metcrm-sqli (替换为实际参考链接)
+  tags: 美特软件-MetaCRM
+
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/druid/websession.html"
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "SESSIONID"
+          - "LastAccessTime"
+          - "Web Session Stat"
+        condition: and
+        part: body
+      - type: status
+        status:
+          - 200

